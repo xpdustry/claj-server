@@ -1,4 +1,4 @@
-package claj;
+package com.xpdustry.claj.server;
 
 import arc.util.CommandHandler;
 import arc.util.CommandHandler.CommandResponse;

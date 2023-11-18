@@ -1,4 +1,4 @@
-package claj;
+package com.xpdustry.claj.server;
 
 import arc.net.Connection;
 import arc.net.DcReason;

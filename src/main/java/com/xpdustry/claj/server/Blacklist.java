@@ -1,4 +1,4 @@
-package claj;
+package com.xpdustry.claj.server;
 
 import arc.struct.Seq;
 import arc.util.Http;
