@@ -1,6 +1,8 @@
 package com.xpdustry.claj.server;
 
+import arc.struct.IntMap;
 import arc.util.CommandHandler;
+import arc.util.CommandHandler.Command;
 import arc.util.CommandHandler.CommandResponse;
 import arc.util.CommandHandler.ResponseType;
 import arc.util.Log;
@@ -9,44 +11,44 @@ import arc.util.Threads;
 
 import java.util.Scanner;
 
-public class Control {
+class Control {
 
-    public final CommandHandler handler = new CommandHandler("");
-    public final Distributor distributor;
+    private final CommandHandler handler = new CommandHandler("");
+    private final Distributor distributor;
 
-    public Control(Distributor distributor) {
+    Control(final Distributor distributor) {
         this.distributor = distributor;
-        this.registerCommands();
+        registerCommands();
 
         Threads.daemon("Application Control", () -> {
-            try (Scanner scanner = new Scanner(System.in)) {
+            try (final Scanner scanner = new Scanner(System.in)) {
                 while (scanner.hasNext()) handleCommand(scanner.nextLine());
             }
         });
     }
 
-    private void handleCommand(String command) {
-        CommandResponse response = handler.handleMessage(command);
+    private void handleCommand(final String command) {
+        final CommandResponse response = handler.handleMessage(command);
 
         if (response.type == ResponseType.unknownCommand) {
-            String closest = handler.getCommandList().map(cmd -> cmd.text).min(cmd -> Strings.levenshtein(cmd, command));
+            final String closest = handler.getCommandList().map((Command cmd) -> cmd.text).min((String cmd) -> Strings.levenshtein(cmd, command));
             Log.err("Command not found. Did you mean @?", closest);
         } else if (response.type != ResponseType.noCommand && response.type != ResponseType.valid)
             Log.err("Too @ command arguments.", response.type == ResponseType.fewArguments ? "few" : "many");
     }
 
     private void registerCommands() {
-        handler.register("help", "Display the command list.", args -> {
+        handler.register("help", "Display the command list.", (final String[] args) -> {
             Log.info("Commands:");
-            handler.getCommandList().each(command -> Log.info("  &b&lb@@&fr - @",
+            handler.getCommandList().each((Command command) -> Log.info("  &b&lb@@&fr - @",
                     command.text, command.paramText.isEmpty() ? "" : " &lc&fi" + command.paramText, command.description));
         });
 
-        handler.register("list", "Displays all current rooms.", args -> {
+        handler.register("list", "Displays all current rooms.", (final String[] args) -> {
             Log.info("Rooms:");
-            distributor.rooms.forEach(entry -> {
+            distributor.rooms.forEach((final IntMap.Entry<Room> entry) -> {
                 Log.info("  &b&lbRoom @&fr", entry.value.link);
-                entry.value.redirectors.each(r -> {
+                entry.value.redirectors.each((final Redirector r) -> {
                     Log.info("    [H] &b&lbConnection @&fr - @", r.host.getID(), Main.getIP(r.host));
                     if (r.client == null) return;
                     Log.info("    [C] &b&lbConnection @&fr - @", r.client.getID(), Main.getIP(r.client));
@@ -54,7 +56,7 @@ public class Control {
             });
         });
 
-        handler.register("limit", "[amount]", "Sets spam packet limit.", args -> {
+        handler.register("limit", "[amount]", "Sets spam packet limit.", (final String[] args) -> {
             if (args.length == 0)
                 Log.info("Current limit - @ packets per 3 seconds.", distributor.spamLimit);
             else {
@@ -63,23 +65,23 @@ public class Control {
             }
         });
 
-        handler.register("ban", "<IP>", "Adds the IP to blacklist.", args -> {
+        handler.register("ban", "<IP>", "Adds the IP to blacklist.", (final String[] args) -> {
             Blacklist.add(args[0]);
             Log.info("IP @ has been blacklisted.", args[0]);
         });
 
-        handler.register("unban", "<IP>", "Removes the IP from blacklist.", args -> {
+        handler.register("unban", "<IP>", "Removes the IP from blacklist.", (final String[] args) -> {
             Blacklist.remove(args[0]);
             Log.info("IP @ has been removed from blacklist.", args[0]);
         });
 
-        handler.register("refresh", "Unbans all IPs and refresh GitHub Actions IPs.", args -> {
+        handler.register("refresh", "Unbans all IPs and refresh GitHub Actions IPs.", (final String[] args) -> {
             Blacklist.clear();
             Blacklist.refresh();
         });
 
-        handler.register("exit", "Stop hosting distributor and exit the application.", args -> {
-            distributor.rooms.forEach(entry -> entry.value.sendMessage("[scarlet]\u26A0[] The server is shutting down.\nTry to reconnect in a minute."));
+        handler.register("exit", "Stop hosting distributor and exit the application.", (final String[] args) -> {
+            distributor.rooms.forEach((IntMap.Entry<Room> entry) -> entry.value.sendMessage("[scarlet]⚠[] The server is shutting down.\nTry to reconnect in a minute."));
 
             Log.info("Shutting down the application.");
             distributor.stop();

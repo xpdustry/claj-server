@@ -2,6 +2,7 @@ package com.xpdustry.claj.server;
 
 import arc.net.Connection;
 import arc.net.DcReason;
+import arc.net.NetListener;
 import arc.struct.Seq;
 import arc.util.Log;
 
@@ -10,14 +11,14 @@ import arc.util.Log;
  * 
  * @author xzxADIxzx
  */
-public class Room {
+class Room {
 
-    public String link;
+    public final String link;
 
-    public Connection host;
-    public Seq<Redirector> redirectors = new Seq<>();
+    final Connection host;
+    public final Seq<Redirector> redirectors = new Seq<>();
 
-    public Room(String link, Connection host) {
+    Room(final String link, final Connection host) {
         this.link = link;
         this.host = host;
 
@@ -28,14 +29,14 @@ public class Room {
         Log.info("Room @ created!", link);
     }
 
-    public void close() {
+    void close() {
         // rooms only closes if the host left, so there's no point in disconnecting it again
-        redirectors.each(r -> r.disconnected(null, DcReason.closed));
+        redirectors.each((final NetListener r) -> r.disconnected(null, DcReason.closed));
 
         Log.info("Room @ closed.", link);
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(final String message) {
         host.sendTCP(message);
     }
 }

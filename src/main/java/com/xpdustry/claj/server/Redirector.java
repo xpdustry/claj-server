@@ -11,21 +11,22 @@ import arc.net.NetListener;
  */
 public class Redirector implements NetListener {
 
-    public Connection host, client;
+    final Connection host;
+    Connection client;
 
-    public Redirector(Connection host) {
+    Redirector(final Connection host) {
         this.host = host;
     }
 
     @Override
-    public void disconnected(Connection connection, DcReason reason) {
+    public void disconnected(final Connection connection, final DcReason reason) {
         host.close(DcReason.closed);
         if (client != null) client.close(DcReason.closed);
     }
 
     @Override
-    public void received(Connection connection, Object object) {
-        var receiver = connection == host ? client : host;
+    public void received(final Connection connection, final Object object) {
+        final var receiver = connection == host ? client : host;
         if (receiver != null) receiver.sendTCP(object);
     }
 }
