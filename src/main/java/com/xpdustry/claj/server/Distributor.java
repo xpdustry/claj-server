@@ -138,8 +138,7 @@ public class Distributor extends Server {
                 if (link.equals("new")) {
                     // Warn host about claj deprecation, see https://github.com/xpdustry/claj-v2
                     connection.sendTCP("[scarlet][[CLaJ Server]: [][yellow]WARNING: []"
-                        + "You using an old version of CLaJ, please update it by installing the 'claj v2' mod, in mod browser. "
-                        + "And optionally removing the 'scheme size' mod (or 'scheme size lite').");
+                        + "You using an old version of CLaJ, please update it by installing the 'claj' mod, in mod browser.");
                   
                     link = generateLink();
 
