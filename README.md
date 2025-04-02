@@ -3,7 +3,7 @@
 Provides the ability to transfer packets between Mindustry clients for network play.
 
 > [!WARNING]
-> Now deprecated, please use the [CLaJ v2](https://github.com/xpdustry/claj-v2) version instead.
+> Now deprecated, please use the [CLaJ v2](https://github.com/xpdustry/claj) version instead.
 
 ## How to use
 
