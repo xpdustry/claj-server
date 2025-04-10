@@ -1,5 +1,9 @@
 # Copy Link and Join
 
+> **Warning**
+> 
+> This repository is deprecated due to development moving to [claj](https://github.com/xpdustry/claj).
+
 Provides the ability to transfer packets between Mindustry clients for network play.
 
 > [!WARNING]

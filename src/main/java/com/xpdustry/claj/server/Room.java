@@ -22,9 +22,10 @@ public class Room {
         this.host = host;
 
         sendMessage("new"); // there must be at least one empty redirector in the room
-        sendMessage("Hello, it's me, [#0096FF]xzxADIxzx#7729[], the creator of CLaJ."); // some contact info
-        sendMessage("I just want to say that if you have any problems, you can always message me on Discord.");
-
+        sendMessage(
+                "[scarlet][[CLaJ Server]: [yellow]WARNING[white], the scheme-size version of [yellow]CLaJ[] is no longer maintained and will shutdown soon. " +
+                "You can get the new version by installing the dedicated [yellow]'claj'[] mod in the mod browser.\n" +
+                "[lightgray]After that, if you don't use any of the other features of scheme-size, removing it is recommended.");
         Log.info("Room @ created!", link);
     }
 
