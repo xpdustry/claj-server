@@ -6,9 +6,6 @@
 
 Provides the ability to transfer packets between Mindustry clients for network play.
 
-> [!WARNING]
-> Now deprecated, please use the other [CLaJ](https://github.com/xpdustry/claj) version instead.
-
 ## How to use
 
 Everything you need to connect is in my [Scheme Size](https://github.com/xzxADIxzx/Scheme-Size) mod.
