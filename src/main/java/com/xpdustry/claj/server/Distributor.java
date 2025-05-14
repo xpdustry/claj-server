@@ -1,5 +1,9 @@
 package com.xpdustry.claj.server;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+
 import arc.math.Mathf;
 import arc.net.Connection;
 import arc.net.DcReason;
@@ -11,7 +15,8 @@ import arc.struct.IntMap.Entry;
 import arc.util.Log;
 import arc.util.Ratekeeper;
 
-import java.io.IOException;
+import net.jpountz.lz4.*;
+
 
 /**
  * It is an entry point for clients, distributes their packets to redirectors.
@@ -31,6 +36,26 @@ public class Distributor extends Server {
 
     /** Map containing the connection id and its redirector. */
     public IntMap<Redirector> redirectors = new IntMap<>();
+
+    /************************/
+    // Manually constructs an InfoMessageCallPacket to inform connecting clients that this CLaJ version is obsolete.
+    final String message = "[yellow]\u26A0 \u26A0 \u26A0 WARNING \u26A0 \u26A0 \u26A0[] \n"
+                         + "The scheme-size CLaJ is no longer maintained! \n"
+                         + "Please install the dedicated 'claj' mod in the mod browser. \n\n"
+                         + "[lightgray]If you're using scheme-size only for the CLaJ feature, it's recommended to uninstall it.";
+    final byte[] messageBytes = message.getBytes(Charset.forName("UTF-8"));
+    final ByteBuffer infoMessagePacket = ByteBuffer.allocate(1 + 2 + 1 + 1 + 2 + messageBytes.length) // total length
+                                                   .put((byte)0) // id (will be populated dynamically)
+                                                   .putShort((short)(3 + messageBytes.length)) // length
+                                                   .put((byte)0) // no compression
+                                                   .put((byte)1) // non null string
+                                                   .putShort((short)messageBytes.length) // message length
+                                                   .put(messageBytes) // encoded message
+                                                   .rewind();
+    final ByteBuffer decompressBuffer = ByteBuffer.allocate(32768);
+    final LZ4FastDecompressor decompressor = LZ4Factory.fastestInstance().fastDecompressor();
+    final LZ4Compressor compressor = LZ4Factory.fastestInstance().fastCompressor();
+    /************************/
 
     public Distributor() {
         super(32768, 8192, new Serializer());
@@ -178,7 +203,36 @@ public class Distributor extends Server {
             }
 
             var redirector = redirectors.get(connection.getID());
-            if (redirector != null) redirector.received(connection, object);
+            if (redirector != null) {
+                // Manually send an InfoMessageCallPacket to inform connecting clients that this CLaJ version is obsolete.
+                if (object instanceof ByteBuffer buffer) {
+                    final int lastPosition = buffer.position();
+
+                    // If it's a ConnectPacket, determine if it's a v7 or v8 client
+                    if (buffer.get() == 3) {
+                        final int length = buffer.getShort() & 0xffff;
+                        final byte compression = buffer.get();
+                        final int version;
+
+                        if (compression == 0) {
+                            version = buffer.getInt();
+                        } else {
+                            decompressor.decompress(buffer, buffer.position(), decompressBuffer, 0, length);
+                            decompressBuffer.rewind();
+                            version = decompressBuffer.getInt();
+                        }
+
+                        infoMessagePacket.rewind();
+                        // id=40 on v7 and 48 on v8
+                        infoMessagePacket.put(0, (byte)(version < 147 && version != -1 ? 40 : 48));
+                        connection.sendTCP(infoMessagePacket);
+                    }
+
+                    buffer.position(lastPosition);
+                }
+
+                redirector.received(connection, object);
+            }
         }
     }
 }

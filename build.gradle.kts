@@ -13,6 +13,8 @@ repositories {
 dependencies {
     implementation("com.github.Anuken.Arc:arc-core:v146")
     implementation("com.github.Anuken.Arc:arcnet:v146")
+    // Used to uncompress ConnectPacket, to determine the client's mindustry version
+    implementation("org.lz4:lz4-java:1.8.0")
 }
 
 indra {
