@@ -223,7 +223,7 @@ public class Distributor extends Server {
                         }
 
                         infoMessagePacket.rewind();
-                        // id=40 on v7 and 48 on v8infoMessagePacket
+                        // id=40 on v7 and 48 on v8
                         infoMessagePacket.put(0, (byte)(version < 147 && version != -1 ? 40 : 48));
                         connection.sendTCP(infoMessagePacket);
                     }
