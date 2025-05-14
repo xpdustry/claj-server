@@ -1,6 +1,6 @@
 # Copy Link and Join
 
-> **Warning**
+> [!WARNING]
 > 
 > This repository is deprecated due to development moving to [claj](https://github.com/xpdustry/claj).
 
@@ -21,8 +21,8 @@ For local testing, the command `./gradlew runClajServer` is provided, this will 
 
 ## Local definitions
 
-host - the player who hosted the game and created a room on the server.   
-server - a remote machine that transmits packets from a client to a host.   
-client - a player connecting via a link to a host through a server.   
-link - a string containing the room key, ip and port of the server.   
+host - the player who hosted the game and created a room on the server.
+server - a remote machine that transmits packets from a client to a host.
+client - a player connecting via a link to a host through a server.
+link - a string containing the room key, ip and port of the server.
 room - an object that exists only on the server, serving as a container for connections to the host and client.
