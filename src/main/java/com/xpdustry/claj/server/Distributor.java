@@ -44,7 +44,7 @@ public class Distributor extends Server {
                          + "Please install the dedicated 'claj' mod in the mod browser. \n\n"
                          + "[lightgray]If you're using scheme-size only for the CLaJ feature, it's recommended to uninstall it.";
     final byte[] messageBytes = message.getBytes(Charset.forName("UTF-8"));
-    final ByteBuffer infoMessagePacket = ByteBuffer.allocate(1 + 2 + 1 + 1 + 2 + messageBytes.length)
+    final ByteBuffer infoMessagePacket = ByteBuffer.allocate(1 + 2 + 1 + 1 + 2 + messageBytes.length) // total length
                                                    .put((byte)0) // id (will be populated dynamically)
                                                    .putShort((short)(3 + messageBytes.length)) // length
                                                    .put((byte)0) // no compression
